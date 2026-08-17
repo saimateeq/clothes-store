@@ -28,7 +28,7 @@ server/uploads/*
 
 *.local
 .claude
-.claude**
+.claude*
 
 # Editor directories and files
 .vscode/*
