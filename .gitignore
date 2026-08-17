@@ -27,8 +27,8 @@ server/uploads/*
 !server/uploads/.gitkeep
 
 *.local
-.env.example
 .claude
+.claude**
 
 # Editor directories and files
 .vscode/*
