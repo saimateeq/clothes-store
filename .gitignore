@@ -38,3 +38,6 @@ server/uploads/*
 *.njsproj
 *.sln
 *.sw?
+
+# Do not track local README
+README.md
