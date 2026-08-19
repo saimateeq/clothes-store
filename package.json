@@ -8,8 +8,8 @@
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
     "install:all": "npm install --prefix client && npm install --prefix server",
-    "build": "npm run build --prefix client",
-    "start": "npm run start --prefix server",
+    "build": "vite build",
+    "start": "node server.js",
     "seed": "npm run seed --prefix server"
   },
   "devDependencies": {
