@@ -27,8 +27,6 @@ server/uploads/*
 !server/uploads/.gitkeep
 
 *.local
-.claude
-.claude*
 
 # Editor directories and files
 .vscode/*
@@ -41,5 +39,4 @@ server/uploads/*
 *.sln
 *.sw?
 
-# Do not track local README
-README.md
+
