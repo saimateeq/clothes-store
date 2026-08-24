@@ -1,6 +1,10 @@
-import transporter, { isEmailConfigured } from "../config/email.js";
+import { isEmailConfigured, sendMail } from "../config/email.js";
 
-const FROM = process.env.EMAIL_FROM || "VELORA <no-reply@velora.com>";
+// Resend's shared sandbox address — works out of the box but can only
+// deliver to the email you signed up to Resend with. Once a sending domain
+// is verified in the Resend dashboard, set EMAIL_FROM to an address on that
+// domain (e.g. "VELORA <no-reply@yourdomain.com>") to email real customers.
+const FROM = process.env.EMAIL_FROM || "VELORA <onboarding@resend.dev>";
 
 function layout({ title, body }) {
   return `
@@ -19,7 +23,7 @@ async function send({ to, subject, html }) {
     console.log(`[email:disabled] Would send "${subject}" to ${to}\n${html.replace(/<[^>]+>/g, " ").trim()}`);
     return { delivered: false };
   }
-  await transporter.sendMail({ from: FROM, to, subject, html });
+  await sendMail({ from: FROM, to, subject, html });
   return { delivered: true };
 }
 

@@ -1,41 +1,41 @@
-import nodemailer from "nodemailer";
+const RESEND_API_URL = "https://api.resend.com/emails";
 
-export const createEmailTransport = (env = process.env) => {
-  const smtpHost = env.SMTP_HOST;
-  const smtpUser = env.SMTP_USER;
-  const smtpPassword = env.SMTP_PASSWORD;
+// Resend over HTTPS instead of raw SMTP — Render's network doesn't reliably
+// deliver outbound SMTP (port 587) to Gmail (connections just hang until
+// they time out), but HTTPS to Resend's API works the same as any other
+// third-party API call.
+export const createEmailClient = (env = process.env) => {
+  const apiKey = env.RESEND_API_KEY;
+  const isEmailConfigured = Boolean(apiKey);
 
-  const isEmailConfigured = Boolean(smtpHost && smtpUser && smtpPassword);
+  async function sendMail({ from, to, subject, html }) {
+    const response = await fetch(RESEND_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ from, to: [to], subject, html }),
+    });
 
-  const transporter = isEmailConfigured
-    ? nodemailer.createTransport({
-        host: smtpHost,
-        port: Number(env.SMTP_PORT) || 587,
-        secure: Number(env.SMTP_PORT) === 465,
-        auth: {
-          user: smtpUser,
-          pass: smtpPassword,
-        },
-        connectionTimeout: 15000,
-        greetingTimeout: 15000,
-        socketTimeout: 20000,
-        tls: {
-          rejectUnauthorized: false,
-        },
-      })
-    : null;
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.message || `Resend request failed with status ${response.status}`);
+    }
 
-  return { isEmailConfigured, transporter };
+    return response.json();
+  }
+
+  return { isEmailConfigured, sendMail };
 };
 
-const { isEmailConfigured, transporter } = createEmailTransport();
+const { isEmailConfigured, sendMail } = createEmailClient();
 
 if (!isEmailConfigured) {
   console.warn(
-    "Email is not configured — set SMTP_HOST/SMTP_USER/SMTP_PASSWORD in server/.env. " +
+    "Email is not configured — set RESEND_API_KEY in server/.env. " +
       "Emails will be logged to the console instead of sent."
   );
 }
 
-export { isEmailConfigured };
-export default transporter;
+export { isEmailConfigured, sendMail };
