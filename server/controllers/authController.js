@@ -18,7 +18,7 @@ export const requestRegistrationOtp = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!isEmailConfigured) {
-    throw new ApiError(503, "Email is not configured yet. Set SMTP_HOST/SMTP_USER/SMTP_PASSWORD in server/.env.");
+    throw new ApiError(503, "Email is not configured yet. Set RESEND_API_KEY in server/.env.");
   }
 
   const existingUser = await User.findOne({ email });
