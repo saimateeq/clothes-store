@@ -42,7 +42,12 @@ export const requestRegistrationOtp = asyncHandler(async (req, res) => {
     { upsert: true, setDefaultsOnInsert: true }
   );
 
-  await sendOtpEmail({ name, email }, otp);
+  try {
+    await sendOtpEmail({ name, email }, otp);
+  } catch (error) {
+    console.error("requestRegistrationOtp email send failed:", error.message);
+    throw new ApiError(503, "We couldn't send the verification code right now. Please try again in a moment.");
+  }
 
   created(res, { email }, "Verification code sent");
 });
