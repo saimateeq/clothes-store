@@ -46,8 +46,7 @@ export const requestRegistrationOtp = asyncHandler(async (req, res) => {
     await sendOtpEmail({ name, email }, otp);
   } catch (error) {
     console.error("requestRegistrationOtp email send failed:", error.message);
-    // TEMP DEBUG — remove after diagnosing the live SMTP failure.
-    throw new ApiError(503, `[debug] ${error.message}`);
+    throw new ApiError(503, "We couldn't send the verification code right now. Please try again in a moment.");
   }
 
   created(res, { email }, "Verification code sent");
