@@ -14,6 +14,8 @@ import {
 
 const router = Router();
 
+router.post("/register", authRateLimit, validate(registerSchema), authController.register);
+
 router.post(
   "/register/request-otp",
   authRateLimit,

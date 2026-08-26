@@ -10,6 +10,25 @@ import { isEmailConfigured } from "../config/email.js";
 import { sendWelcomeEmail, sendPasswordResetEmail, sendOtpEmail } from "../services/emailService.js";
 import { generateOtp, hashOtp, OTP_EXPIRY_MS, PENDING_TTL_MS, MAX_OTP_ATTEMPTS } from "../services/otpService.js";
 
+// Direct, single-step registration — no email verification. Kept alongside
+// the OTP flow below (currently unused by the client) rather than deleting
+// it: OTP verification needs a Resend sending domain to email anyone other
+// than the account owner, which isn't set up yet. Once it is, swap the
+// client back to /register/request-otp + /register/verify-otp.
+export const register = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw ApiError.conflict("An account with this email already exists");
+
+  const user = await User.create({ name, email, password, role: "customer" });
+
+  sendAuthCookie(res, user._id);
+  sendWelcomeEmail(user).catch((err) => console.error("sendWelcomeEmail failed:", err.message));
+
+  created(res, { user: user.toSafeJSON() }, "Account created");
+});
+
 // Registration is two-step: request-otp creates/refreshes a pending
 // registration and emails a code; verify-otp checks it and only THEN
 // creates the real User. A User existing at all is proof its email was
