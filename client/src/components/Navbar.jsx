@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Heart, User, ShoppingBag, Menu } from "lucide-react";
+import { Search, Heart, User, ShoppingBag, Menu, LayoutDashboard } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import { selectIsAuthenticated } from "../features/auth/authSlice";
+import { selectIsAuthenticated, selectIsAdmin } from "../features/auth/authSlice";
 import MobileMenu from "./MobileMenu";
 import SearchOverlay from "./SearchOverlay";
 
@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { label: "Men", to: "/shop/men" },
   { label: "New Arrivals", to: "/shop?sort=newest" },
   { label: "Collections", to: "/shop" },
+  { label: "Our Story", to: "/about" },
 ];
 
 export default function Navbar() {
@@ -25,6 +26,7 @@ export default function Navbar() {
   const { count: cartCount, pulse, openCart } = useCart();
   const { count: wishCount } = useWishlist();
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAdmin = useSelector(selectIsAdmin);
 
   useEffect(() => {
     if (!isHome) {
@@ -49,7 +51,7 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-500 text-black ${
+        className={`sticky top-9 z-40 w-full transition-all duration-500 text-black ${
           transparent
             ? "border-b border-transparent bg-transparent"
             : "border-b border-line bg-bg/90 backdrop-blur-md"
@@ -123,6 +125,16 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
+                aria-label="Admin panel"
+                title="Admin panel"
+              >
+                <LayoutDashboard size={19} strokeWidth={1.5} />
+              </Link>
+            )}
             <Link
               to={isAuthenticated ? "/account" : "/login"}
               className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
@@ -167,6 +179,7 @@ export default function Navbar() {
         links={NAV_LINKS}
         onSearchClick={() => setSearchOpen(true)}
         isAuthenticated={isAuthenticated}
+        isAdmin={isAdmin}
       />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { resizeImage } from "../utils/imageUrl";
 
 export default function Cart() {
   const { items, subtotal, removeItem, updateQuantity } = useCart();
@@ -35,7 +36,7 @@ export default function Cart() {
           {items.map((line) => (
             <li key={line.key} className="flex gap-5 py-6 sm:gap-6">
               <img
-                src={line.image}
+                src={resizeImage(line.image, 300)}
                 alt=""
                 className="h-36 w-28 flex-shrink-0 object-cover sm:h-44 sm:w-36"
                 loading="lazy"

@@ -189,7 +189,7 @@ export default function ProductDetails() {
             </span>
           </div>
 
-          <div className="flex items-baseline gap-3 font-heading text-3xl">
+          <div className="price flex items-baseline gap-3 text-2xl sm:text-3xl">
             {onSale ? (
               <>
                 <span className="text-muted line-through">${product.price}</span>

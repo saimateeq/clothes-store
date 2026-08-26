@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, Search, Heart, User } from "lucide-react";
+import { X, Search, Heart, User, LayoutDashboard } from "lucide-react";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 
-export default function MobileMenu({ open, onClose, links, onSearchClick, isAuthenticated }) {
+export default function MobileMenu({ open, onClose, links, onSearchClick, isAuthenticated, isAdmin }) {
   useEscapeKey(onClose, open);
   const extraLinks = [
     { label: "Wishlist", to: "/wishlist", icon: Heart },
     { label: "Account", to: isAuthenticated ? "/account" : "/login", icon: User },
+    ...(isAdmin ? [{ label: "Admin", to: "/admin", icon: LayoutDashboard }] : []),
   ];
   return (
     <AnimatePresence>

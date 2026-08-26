@@ -13,7 +13,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from ?? "/account";
+  const redirectTo = location.state?.from;
 
   const [login, { isLoading, error }] = useLoginMutation();
   const {
@@ -25,8 +25,13 @@ export default function Login() {
   const onSubmit = async (values) => {
     const res = await login(values).unwrap().catch(() => null);
     if (res) {
-      dispatch(setCredentials(res.data.user));
-      navigate(redirectTo, { replace: true });
+      const user = res.data.user;
+      dispatch(setCredentials(user));
+      // Respect an explicit redirect (e.g. bounced here from a protected
+      // checkout page) over role — only fall back to a role-based default
+      // when the user landed on /login directly.
+      const isStaff = user.role === "admin" || user.role === "manager";
+      navigate(redirectTo ?? (isStaff ? "/admin" : "/account"), { replace: true });
     }
   };
 

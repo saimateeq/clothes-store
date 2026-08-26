@@ -20,7 +20,7 @@ export default function Newsletter() {
         </span>
       </div>
 
-      <div className="relative mx-auto grid max-w-[1600px] grid-cols-1 gap-10 px-5 py-20 sm:px-8 lg:grid-cols-2 lg:items-center lg:py-32">
+      <div className="section-py relative mx-auto grid max-w-[1600px] grid-cols-1 gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:items-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -50,7 +50,10 @@ export default function Newsletter() {
               <span>Thank you — check your inbox to confirm.</span>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex items-end gap-4 border-b border-white/30 py-4">
+            <form
+              onSubmit={handleSubmit}
+              className="flex items-end gap-4 border-b border-white/30 py-4 transition-colors duration-300 focus-within:border-white"
+            >
               <label htmlFor="newsletter-email" className="sr-only">
                 Email address
               </label>

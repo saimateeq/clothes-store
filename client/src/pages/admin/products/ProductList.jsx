@@ -7,6 +7,7 @@ import {
   useDeleteProductMutation,
 } from "../../../features/products/productsApi";
 import { useBulkUpdateProductsMutation, useDuplicateProductMutation } from "../../../features/admin/adminApi";
+import MobileDataCard from "../../../components/admin/MobileDataCard";
 
 export default function ProductList() {
   const [search, setSearch] = useState("");
@@ -75,85 +76,148 @@ export default function ProductList() {
         )}
       </div>
 
-      <div className="overflow-x-auto border border-line">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-line bg-line/30 text-left text-muted">
-              <th className="w-10 p-3">
-                <input type="checkbox" checked={selected.length === products.length && products.length > 0} onChange={toggleSelectAll} className="accent-ink" />
-              </th>
-              <th className="p-3 font-normal">Product</th>
-              <th className="p-3 font-normal">SKU</th>
-              <th className="p-3 font-normal">Category</th>
-              <th className="p-3 font-normal">Price</th>
-              <th className="p-3 font-normal">Stock</th>
-              <th className="p-3 font-normal">Status</th>
-              <th className="p-3 font-normal">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={8} className="p-6 text-center text-muted">
-                  Loading…
-                </td>
-              </tr>
-            ) : products.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="p-6 text-center text-muted">
-                  No products found.
-                </td>
-              </tr>
-            ) : (
-              products.map((p) => {
-                const stock = p.variants?.reduce((sum, v) => sum + v.inventory, 0) ?? 0;
-                return (
-                  <tr key={p._id} className="border-b border-line last:border-0">
-                    <td className="p-3">
-                      <input type="checkbox" checked={selected.includes(p._id)} onChange={() => toggleSelect(p._id)} className="accent-ink" />
-                    </td>
-                    <td className="flex items-center gap-3 p-3">
-                      <img src={p.images?.[0]?.url} alt="" className="h-12 w-10 object-cover" />
-                      <span className="font-medium">{p.name}</span>
-                    </td>
-                    <td className="p-3 text-muted">{p.sku}</td>
-                    <td className="p-3 text-muted">{p.category?.name}</td>
-                    <td className="p-3">${p.price}</td>
-                    <td className={`p-3 ${stock <= (p.lowStockThreshold ?? 5) ? "text-accent" : ""}`}>{stock}</td>
-                    <td className="p-3">
-                      <button
-                        type="button"
-                        onClick={() => setActive({ id: p._id, isActive: !p.isActive })}
-                        className={`label px-2 py-1 text-[10px] ${p.isActive ? "bg-ink text-bg" : "border border-line text-muted"}`}
-                      >
-                        {p.isActive ? "Active" : "Inactive"}
-                      </button>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-3 text-muted">
-                        <Link to={`/admin/products/${p._id}/edit`} aria-label="Edit" className="hover:text-ink">
-                          <Pencil size={14} />
-                        </Link>
-                        <button type="button" onClick={() => duplicateProduct(p._id)} aria-label="Duplicate" className="hover:text-ink">
-                          <Copy size={14} />
-                        </button>
+      {isLoading ? (
+        <div className="border border-line p-6 text-center text-sm text-muted">Loading…</div>
+      ) : products.length === 0 ? (
+        <div className="border border-line p-6 text-center text-sm text-muted">No products found.</div>
+      ) : (
+        <>
+          {/* Desktop / tablet: full comparison table */}
+          <div className="hidden overflow-x-auto border border-line md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-line bg-line/30 text-left text-muted">
+                  <th className="w-10 p-3">
+                    <input type="checkbox" checked={selected.length === products.length && products.length > 0} onChange={toggleSelectAll} className="accent-ink" />
+                  </th>
+                  <th className="p-3 font-normal">Product</th>
+                  <th className="p-3 font-normal">SKU</th>
+                  <th className="p-3 font-normal">Category</th>
+                  <th className="p-3 font-normal">Price</th>
+                  <th className="p-3 font-normal">Stock</th>
+                  <th className="p-3 font-normal">Status</th>
+                  <th className="p-3 font-normal">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((p) => {
+                  const stock = p.variants?.reduce((sum, v) => sum + v.inventory, 0) ?? 0;
+                  return (
+                    <tr key={p._id} className="border-b border-line last:border-0">
+                      <td className="p-3">
+                        <input type="checkbox" checked={selected.includes(p._id)} onChange={() => toggleSelect(p._id)} className="accent-ink" />
+                      </td>
+                      <td className="flex items-center gap-3 p-3">
+                        <img src={p.images?.[0]?.url} alt="" className="h-12 w-10 object-cover" />
+                        <span className="font-medium">{p.name}</span>
+                      </td>
+                      <td className="p-3 text-muted">{p.sku}</td>
+                      <td className="p-3 text-muted">{p.category?.name}</td>
+                      <td className="p-3">${p.price}</td>
+                      <td className={`p-3 ${stock <= (p.lowStockThreshold ?? 5) ? "text-accent" : ""}`}>{stock}</td>
+                      <td className="p-3">
                         <button
                           type="button"
-                          onClick={() => confirm(`Delete "${p.name}"? This cannot be undone.`) && deleteProduct(p._id)}
-                          aria-label="Delete"
-                          className="hover:text-accent"
+                          onClick={() => setActive({ id: p._id, isActive: !p.isActive })}
+                          className={`label px-2 py-1 text-[10px] ${p.isActive ? "bg-ink text-bg" : "border border-line text-muted"}`}
                         >
-                          <Trash2 size={14} />
+                          {p.isActive ? "Active" : "Inactive"}
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-3 text-muted">
+                          <Link to={`/admin/products/${p._id}/edit`} aria-label="Edit" className="hover:text-ink">
+                            <Pencil size={14} />
+                          </Link>
+                          <button type="button" onClick={() => duplicateProduct(p._id)} aria-label="Duplicate" className="hover:text-ink">
+                            <Copy size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => confirm(`Delete "${p.name}"? This cannot be undone.`) && deleteProduct(p._id)}
+                            aria-label="Delete"
+                            className="hover:text-accent"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: stacked cards instead of horizontal scroll */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {products.map((p) => {
+              const stock = p.variants?.reduce((sum, v) => sum + v.inventory, 0) ?? 0;
+              return (
+                <MobileDataCard
+                  key={p._id}
+                  title={
+                    <div className="flex min-w-0 items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(p._id)}
+                        onChange={() => toggleSelect(p._id)}
+                        className="shrink-0 accent-ink"
+                        aria-label={`Select ${p.name}`}
+                      />
+                      <img src={p.images?.[0]?.url} alt="" className="h-12 w-10 shrink-0 object-cover" />
+                      <Link to={`/admin/products/${p._id}/edit`} className="link-underline truncate font-medium">
+                        {p.name}
+                      </Link>
+                    </div>
+                  }
+                  status={
+                    <button
+                      type="button"
+                      onClick={() => setActive({ id: p._id, isActive: !p.isActive })}
+                      className={`label shrink-0 px-2 py-1 text-[10px] ${p.isActive ? "bg-ink text-bg" : "border border-line text-muted"}`}
+                    >
+                      {p.isActive ? "Active" : "Inactive"}
+                    </button>
+                  }
+                  fields={[
+                    { label: "SKU", value: p.sku },
+                    { label: "Category", value: p.category?.name },
+                    { label: "Price", value: `$${p.price}` },
+                    {
+                      label: "Stock",
+                      value: <span className={stock <= (p.lowStockThreshold ?? 5) ? "text-accent" : ""}>{stock}</span>,
+                    },
+                  ]}
+                  actions={
+                    <>
+                      <Link to={`/admin/products/${p._id}/edit`} aria-label="Edit" className="flex items-center gap-2 text-xs text-muted hover:text-ink">
+                        <Pencil size={14} /> Edit
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => duplicateProduct(p._id)}
+                        aria-label="Duplicate"
+                        className="flex items-center gap-2 text-xs text-muted hover:text-ink"
+                      >
+                        <Copy size={14} /> Duplicate
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => confirm(`Delete "${p.name}"? This cannot be undone.`) && deleteProduct(p._id)}
+                        aria-label="Delete"
+                        className="flex items-center gap-2 text-xs text-muted hover:text-accent"
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </>
+                  }
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {pages > 1 && (
         <div className="flex items-center justify-center gap-4">

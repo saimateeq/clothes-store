@@ -15,7 +15,7 @@ export default function Testimonials() {
 
   return (
     <section className="border-y border-line bg-white/40">
-      <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28">
+      <div className="section-py mx-auto flex max-w-2xl flex-col items-center gap-6 px-6 text-center">
         <div className="flex gap-1 text-accent" aria-hidden="true">
           {Array.from({ length: current.rating }).map((_, i) => (
             <Star key={i} size={14} fill="currentColor" strokeWidth={0} />
@@ -49,7 +49,7 @@ export default function Testimonials() {
               aria-label={`Testimonial from ${t.author}`}
               onClick={() => setIndex(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === index ? "w-6 bg-ink" : "w-1.5 bg-line"
+                i === index ? "w-6 bg-ink" : "w-1.5 bg-line hover:bg-muted"
               }`}
             />
           ))}

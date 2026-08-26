@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useListAllOrdersAdminQuery } from "../../features/admin/adminApi";
+import MobileDataCard from "../../components/admin/MobileDataCard";
 
 const STATUSES = ["", "pending", "confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled", "refunded"];
 
@@ -34,52 +35,74 @@ export default function Orders() {
         </select>
       </div>
 
-      <div className="overflow-x-auto border border-line">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-line bg-line/30 text-left text-muted">
-              <th className="p-3 font-normal">Order</th>
-              <th className="p-3 font-normal">Customer</th>
-              <th className="p-3 font-normal">Date</th>
-              <th className="p-3 font-normal">Items</th>
-              <th className="p-3 font-normal">Total</th>
-              <th className="p-3 font-normal">Payment</th>
-              <th className="p-3 font-normal">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={7} className="p-6 text-center text-muted">Loading…</td>
-              </tr>
-            ) : orders.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="p-6 text-center text-muted">No orders found.</td>
-              </tr>
-            ) : (
-              orders.map((order) => (
-                <tr key={order._id} className="border-b border-line last:border-0">
-                  <td className="p-3">
-                    <Link to={`/admin/orders/${order._id}`} className="link-underline font-medium">
-                      #{order._id.slice(-8).toUpperCase()}
-                    </Link>
-                  </td>
-                  <td className="p-3 text-muted">{order.user?.name}</td>
-                  <td className="p-3 text-muted">{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td className="p-3 text-muted">{order.items.length}</td>
-                  <td className="p-3">${order.total.toFixed(2)}</td>
-                  <td className="p-3 capitalize text-muted">{order.paymentStatus}</td>
-                  <td className="p-3">
-                    <span className="label border border-line px-2 py-1 text-[10px] capitalize">
-                      {order.orderStatus.replace(/_/g, " ")}
-                    </span>
-                  </td>
+      {isLoading ? (
+        <div className="border border-line p-6 text-center text-sm text-muted">Loading…</div>
+      ) : orders.length === 0 ? (
+        <div className="border border-line p-6 text-center text-sm text-muted">No orders found.</div>
+      ) : (
+        <>
+          {/* Desktop / tablet: full comparison table */}
+          <div className="hidden overflow-x-auto border border-line md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-line bg-line/30 text-left text-muted">
+                  <th className="p-3 font-normal">Order</th>
+                  <th className="p-3 font-normal">Customer</th>
+                  <th className="p-3 font-normal">Date</th>
+                  <th className="p-3 font-normal">Items</th>
+                  <th className="p-3 font-normal">Total</th>
+                  <th className="p-3 font-normal">Payment</th>
+                  <th className="p-3 font-normal">Status</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order._id} className="border-b border-line last:border-0">
+                    <td className="p-3">
+                      <Link to={`/admin/orders/${order._id}`} className="link-underline font-medium">
+                        #{order._id.slice(-8).toUpperCase()}
+                      </Link>
+                    </td>
+                    <td className="p-3 text-muted">{order.user?.name}</td>
+                    <td className="p-3 text-muted">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td className="p-3 text-muted">{order.items.length}</td>
+                    <td className="p-3">${order.total.toFixed(2)}</td>
+                    <td className="p-3 capitalize text-muted">{order.paymentStatus}</td>
+                    <td className="p-3">
+                      <span className="label border border-line px-2 py-1 text-[10px] capitalize">
+                        {order.orderStatus.replace(/_/g, " ")}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile: stacked cards instead of horizontal scroll */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {orders.map((order) => (
+              <MobileDataCard
+                key={order._id}
+                title={`#${order._id.slice(-8).toUpperCase()}`}
+                titleTo={`/admin/orders/${order._id}`}
+                status={
+                  <span className="label shrink-0 border border-line px-2 py-1 text-[10px] capitalize">
+                    {order.orderStatus.replace(/_/g, " ")}
+                  </span>
+                }
+                fields={[
+                  { label: "Customer", value: order.user?.name },
+                  { label: "Date", value: new Date(order.createdAt).toLocaleDateString() },
+                  { label: "Items", value: order.items.length },
+                  { label: "Total", value: `$${order.total.toFixed(2)}` },
+                  { label: "Payment", value: <span className="capitalize">{order.paymentStatus}</span> },
+                ]}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {pages > 1 && (
         <div className="flex items-center justify-center gap-4">

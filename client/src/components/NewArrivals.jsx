@@ -9,7 +9,7 @@ export default function NewArrivals() {
   const newProducts = normalizeProducts(data?.data?.products);
 
   return (
-    <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:py-28">
+    <section className="section-py mx-auto max-w-[1600px] px-5 sm:px-8">
       <SectionHeading
         label="Just In"
         heading="New Arrivals"

@@ -19,7 +19,7 @@ export default function BestSellers() {
   };
 
   return (
-    <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:py-28">
+    <section className="section-py mx-auto max-w-[1600px] px-5 sm:px-8">
       <div className="flex items-end justify-between gap-6">
         <SectionHeading label="Most Loved" heading="Best Sellers" description="Our most-loved pieces." />
         <div className="hidden shrink-0 gap-3 sm:flex">
@@ -27,7 +27,7 @@ export default function BestSellers() {
             type="button"
             onClick={() => scrollByAmount(-1)}
             aria-label="Previous"
-            className="flex h-11 w-11 items-center justify-center border border-line transition-colors hover:border-ink"
+            className="flex h-11 w-11 items-center justify-center border border-line text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-bg active:scale-95"
           >
             <ArrowLeft size={16} strokeWidth={1.5} />
           </button>
@@ -35,7 +35,7 @@ export default function BestSellers() {
             type="button"
             onClick={() => scrollByAmount(1)}
             aria-label="Next"
-            className="flex h-11 w-11 items-center justify-center border border-line transition-colors hover:border-ink"
+            className="flex h-11 w-11 items-center justify-center border border-line text-ink transition-all duration-300 hover:border-ink hover:bg-ink hover:text-bg active:scale-95"
           >
             <ArrowRight size={16} strokeWidth={1.5} />
           </button>

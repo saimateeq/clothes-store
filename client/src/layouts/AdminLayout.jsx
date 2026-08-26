@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -12,7 +12,6 @@ import {
   Star,
   Tag,
   Mail,
-  Settings,
   Menu,
   X,
   LogOut,
@@ -32,7 +31,6 @@ const NAV = [
   { label: "Reviews", to: "/admin/reviews", icon: Star },
   { label: "Coupons", to: "/admin/coupons", icon: Tag },
   { label: "Newsletter", to: "/admin/newsletter", icon: Mail },
-  { label: "Settings", to: "/admin/settings", icon: Settings },
 ];
 
 function SidebarLinks({ onNavigate }) {
@@ -77,7 +75,9 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-bg text-ink">
       <aside className="hidden w-60 shrink-0 flex-col border-r border-line lg:flex">
         <div className="flex items-center gap-2 border-b border-line px-5 py-5">
-          <span className="font-heading text-xl tracking-[0.15em]">VELORA</span>
+          <Link to="/" className="font-heading text-xl tracking-[0.15em] transition-opacity hover:opacity-70">
+            VELORA
+          </Link>
           <span className="label text-muted">Admin</span>
         </div>
         <SidebarLinks />
@@ -98,7 +98,9 @@ export default function AdminLayout() {
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <Menu size={22} strokeWidth={1.5} />
           </button>
-          <span className="font-heading text-lg tracking-[0.15em]">VELORA ADMIN</span>
+          <Link to="/" className="font-heading text-lg tracking-[0.15em]">
+            VELORA ADMIN
+          </Link>
           <div className="w-[22px]" />
         </header>
 
@@ -125,7 +127,9 @@ export default function AdminLayout() {
               className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col bg-bg lg:hidden"
             >
               <div className="flex items-center justify-between border-b border-line px-5 py-5">
-                <span className="font-heading text-xl tracking-[0.15em]">VELORA</span>
+                <Link to="/" className="font-heading text-xl tracking-[0.15em]" onClick={() => setMobileOpen(false)}>
+                  VELORA
+                </Link>
                 <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close menu">
                   <X size={20} strokeWidth={1.5} />
                 </button>

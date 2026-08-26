@@ -10,7 +10,7 @@ const BENEFITS = [
 export default function Benefits() {
   return (
     <section className="border-b border-line">
-      <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-8 px-5 py-14 sm:px-8 lg:grid-cols-4 lg:gap-6">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-8 px-5 py-10 sm:px-8 sm:py-12 lg:grid-cols-4 lg:gap-6 lg:py-14">
         {BENEFITS.map((benefit) => (
           <div key={benefit.title} className="flex items-center gap-4">
             <benefit.icon size={22} strokeWidth={1.25} className="shrink-0 text-accent" />

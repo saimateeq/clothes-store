@@ -7,7 +7,7 @@ const HEADING_LINES = ["DESIGNED", "FOR THE", "EVERYDAY"];
 
 export default function EditorialSection() {
   return (
-    <section className="mx-auto grid max-w-[1600px] grid-cols-1 items-center gap-10 px-5 py-20 sm:px-8 lg:grid-cols-2 lg:gap-6 lg:py-32">
+    <section className="section-py mx-auto grid max-w-[1600px] grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:grid-cols-2 lg:gap-6">
       <div className="order-2 flex flex-col gap-8 lg:order-1 lg:pr-12">
         <div>
           {HEADING_LINES.map((line, i) => (

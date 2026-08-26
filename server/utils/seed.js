@@ -10,8 +10,8 @@ import Review from "../models/Review.js";
 import Coupon from "../models/Coupon.js";
 import { recalculateProductRating } from "../services/reviewRatingService.js";
 
-const img = (id, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const img = (id, w = 900) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=75`;
 
 async function seedCategories() {
   await Category.deleteMany({});

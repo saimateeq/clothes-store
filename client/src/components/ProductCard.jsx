@@ -4,7 +4,11 @@ import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { resizeImage } from "../utils/imageUrl";
 import QuickAdd from "./QuickAdd";
+
+// 2x a ~300px grid tile — sharp on retina without shipping full-size source.
+const THUMB_WIDTH = 600;
 
 export default function ProductCard({ product, index = 0 }) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -38,14 +42,14 @@ export default function ProductCard({ product, index = 0 }) {
       <div className="relative aspect-[3/4] overflow-hidden bg-line">
         <Link to={`/product/${product.id}`} aria-label={product.name}>
           <img
-            src={product.images[0]}
+            src={resizeImage(product.images[0], THUMB_WIDTH)}
             alt={product.name}
             loading="lazy"
             className="h-full w-full object-cover transition-opacity duration-500 sm:group-hover:opacity-0"
           />
           {product.images[1] && (
             <img
-              src={product.images[1]}
+              src={resizeImage(product.images[1], THUMB_WIDTH)}
               alt=""
               loading="lazy"
               className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-opacity duration-500 sm:group-hover:opacity-100"
@@ -96,15 +100,19 @@ export default function ProductCard({ product, index = 0 }) {
 
       <Link to={`/product/${product.id}`} className="mt-4 flex flex-col gap-1.5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-heading text-lg leading-tight">{product.name}</h3>
-          <div className="flex shrink-0 items-baseline gap-2 text-sm">
+          <h3 className="link-underline font-heading text-lg leading-tight transition-colors duration-300 group-hover:text-muted">
+            {product.name}
+          </h3>
+          <div className="price flex shrink-0 items-baseline gap-2 text-sm">
             {onSale ? (
               <>
                 <span className="text-muted line-through">${product.price}</span>
                 <span className="text-accent">${product.salePrice}</span>
               </>
             ) : (
-              <span>${product.price}</span>
+              <span className="transition-colors duration-300 group-hover:text-accent">
+                ${product.price}
+              </span>
             )}
           </div>
         </div>

@@ -6,7 +6,7 @@ const ASPECTS = ["aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-square
 
 export default function SocialGallery() {
   return (
-    <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:py-28">
+    <section className="section-py mx-auto max-w-[1600px] px-5 sm:px-8">
       <SectionHeading label="@veloraofficial" heading="Follow Velora" />
 
       <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
