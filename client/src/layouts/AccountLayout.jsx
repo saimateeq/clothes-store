@@ -60,9 +60,9 @@ export default function AccountLayout() {
           <button
             type="button"
             onClick={handleLogout}
-            className="label flex items-center justify-center gap-2 border border-line px-2 py-2.5 text-center text-muted transition-colors hover:border-accent hover:text-accent lg:mt-4 lg:justify-start lg:px-4 lg:text-left"
+            className="label flex items-center justify-center gap-1 whitespace-nowrap border border-line px-1 py-2.5 text-center text-muted transition-colors hover:border-accent hover:text-accent lg:mt-4 lg:justify-start lg:gap-2 lg:px-4 lg:text-left"
           >
-            <LogOut size={14} strokeWidth={1.5} />
+            <LogOut size={13} strokeWidth={1.5} className="shrink-0" />
             Log Out
           </button>
         </aside>
