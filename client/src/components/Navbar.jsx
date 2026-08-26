@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Heart, User, ShoppingBag, Menu, LayoutDashboard } from "lucide-react";
+import { Search, Heart, User, ShoppingBag, Menu, LayoutDashboard, LogOut } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import { selectIsAuthenticated, selectIsAdmin } from "../features/auth/authSlice";
+import { selectIsAuthenticated, selectIsAdmin, clearCredentials } from "../features/auth/authSlice";
+import { useLogoutMutation } from "../features/auth/authApi";
 import MobileMenu from "./MobileMenu";
 import SearchOverlay from "./SearchOverlay";
 
@@ -19,6 +20,8 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isHome = location.pathname === "/";
   const [scrolled, setScrolled] = useState(!isHome);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,6 +30,13 @@ export default function Navbar() {
   const { count: wishCount } = useWishlist();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAdmin = useSelector(selectIsAdmin);
+  const [logout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    await logout().catch(() => null);
+    dispatch(clearCredentials());
+    navigate("/");
+  };
 
   useEffect(() => {
     if (!isHome) {
@@ -139,10 +149,22 @@ export default function Navbar() {
               <Link
                 to={isAuthenticated ? "/account" : "/login"}
                 className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
-                aria-label="Account"
+                aria-label={isAuthenticated ? "Account" : "Log In"}
+                title={isAuthenticated ? "Account" : "Log In"}
               >
                 <User size={19} strokeWidth={1.5} />
               </Link>
+            )}
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
+                aria-label="Log Out"
+                title="Log Out"
+              >
+                <LogOut size={19} strokeWidth={1.5} />
+              </button>
             )}
             <button
               type="button"
@@ -182,6 +204,7 @@ export default function Navbar() {
         onSearchClick={() => setSearchOpen(true)}
         isAuthenticated={isAuthenticated}
         isAdmin={isAdmin}
+        onLogout={handleLogout}
       />
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

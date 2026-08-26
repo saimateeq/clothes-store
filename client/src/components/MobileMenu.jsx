@@ -1,15 +1,16 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, Search, Heart, User, LayoutDashboard } from "lucide-react";
+import { X, Search, Heart, User, LayoutDashboard, LogOut } from "lucide-react";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 
-export default function MobileMenu({ open, onClose, links, onSearchClick, isAuthenticated, isAdmin }) {
+export default function MobileMenu({ open, onClose, links, onSearchClick, isAuthenticated, isAdmin, onLogout }) {
   useEscapeKey(onClose, open);
   const extraLinks = [
     { label: "Wishlist", to: "/wishlist", icon: Heart },
     ...(isAdmin
       ? [{ label: "Admin", to: "/admin", icon: LayoutDashboard }]
-      : [{ label: "Account", to: isAuthenticated ? "/account" : "/login", icon: User }]),
+      : [{ label: isAuthenticated ? "Account" : "Log In", to: isAuthenticated ? "/account" : "/login", icon: User }]),
+    ...(isAuthenticated ? [{ label: "Log Out", action: onLogout, icon: LogOut }] : []),
   ];
   return (
     <AnimatePresence>
@@ -62,17 +63,32 @@ export default function MobileMenu({ open, onClose, links, onSearchClick, isAuth
               <Search size={18} strokeWidth={1.5} />
               Search
             </button>
-            {extraLinks.map((item) => (
-              <Link
-                key={item.label}
-                to={item.to}
-                onClick={onClose}
-                className="flex flex-col items-center gap-2 label text-muted"
-              >
-                <item.icon size={18} strokeWidth={1.5} />
-                {item.label}
-              </Link>
-            ))}
+            {extraLinks.map((item) =>
+              item.action ? (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    item.action();
+                  }}
+                  className="flex flex-col items-center gap-2 label text-muted"
+                >
+                  <item.icon size={18} strokeWidth={1.5} />
+                  {item.label}
+                </button>
+              ) : (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={onClose}
+                  className="flex flex-col items-center gap-2 label text-muted"
+                >
+                  <item.icon size={18} strokeWidth={1.5} />
+                  {item.label}
+                </Link>
+              )
+            )}
           </div>
         </motion.div>
       )}
