@@ -26,7 +26,7 @@ function StatCard({ label, value, change }) {
   return (
     <div className="border border-line p-5">
       <span className="label text-muted">{label}</span>
-      <div className="mt-2 flex items-end justify-between">
+      <div className="mt-2 flex items-end justify-between flex-wrap gap-2">
         <span className="font-heading text-3xl">{value}</span>
         {change !== undefined && (
           <span className={`flex items-center gap-1 text-xs ${positive ? "text-accent" : "text-muted"}`}>

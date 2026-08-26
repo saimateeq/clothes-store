@@ -127,6 +127,10 @@ export default function OrderDetails() {
             <h2 className="label mb-3 text-muted">Payment Summary</h2>
             <dl className="flex flex-col gap-2 text-sm">
               <div className="flex justify-between">
+                <dt className="text-muted">Payment Method</dt>
+                <dd>{order.paymentMethod === "cod" ? "Cash on Delivery" : "Card"}</dd>
+              </div>
+              <div className="flex justify-between">
                 <dt className="text-muted">Subtotal</dt>
                 <dd>${order.subtotal.toFixed(2)}</dd>
               </div>

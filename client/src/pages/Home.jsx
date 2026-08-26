@@ -18,7 +18,6 @@ export default function Home() {
       <CategorySection />
       <NewArrivals />
       <BestSellers />
-      <CollectionBanner />
       <Newsletter />
       <Benefits />
     </>

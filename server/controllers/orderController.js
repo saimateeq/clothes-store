@@ -60,11 +60,58 @@ export const createOrder = asyncHandler(async (req, res) => {
     shippingAddress,
     billingAddress,
     shippingMethod,
+    paymentMethod: "card",
     paymentStatus: "paid",
     orderStatus: "confirmed",
     paymentIntentId,
     coupon: totals.coupon ? { code: totals.coupon.code, discountAmount: totals.discount } : undefined,
     statusHistory: [{ status: "confirmed", note: "Payment received" }],
+  });
+
+  if (totals.coupon) await incrementCouponUsage(totals.coupon._id);
+
+  const cart = await getOrCreateCart(req.user._id);
+  cart.items = [];
+  await cart.save();
+
+  created(res, { order }, "Order placed");
+});
+
+// Cash on delivery skips Stripe entirely — no PaymentIntent to verify, so
+// totals come straight from the current cart/coupon like the PaymentIntent
+// path does, and the order starts unpaid: paymentStatus stays "pending"
+// until staff mark it paid (e.g. after collecting cash at delivery).
+export const createCodOrder = asyncHandler(async (req, res) => {
+  const { shippingAddress, billingAddress, shippingMethod, couponCode } = req.body;
+
+  const totals = await computeCheckoutTotals(req.user._id, shippingMethod, couponCode || null);
+
+  await decrementInventoryForLines(totals.lines);
+
+  const order = await Order.create({
+    user: req.user._id,
+    items: totals.lines.map((l) => ({
+      product: l.productId,
+      name: l.name,
+      image: l.image,
+      price: l.price,
+      quantity: l.quantity,
+      size: l.size,
+      color: l.color,
+    })),
+    subtotal: totals.subtotal,
+    shipping: totals.shipping,
+    tax: totals.tax,
+    discount: totals.discount,
+    total: totals.total,
+    shippingAddress,
+    billingAddress,
+    shippingMethod,
+    paymentMethod: "cod",
+    paymentStatus: "pending",
+    orderStatus: "pending",
+    coupon: totals.coupon ? { code: totals.coupon.code, discountAmount: totals.discount } : undefined,
+    statusHistory: [{ status: "pending", note: "Cash on delivery — payment due at delivery" }],
   });
 
   if (totals.coupon) await incrementCouponUsage(totals.coupon._id);

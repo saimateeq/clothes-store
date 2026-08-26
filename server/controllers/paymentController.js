@@ -8,7 +8,7 @@ function assertStripeConfigured() {
   if (!isStripeConfigured) {
     throw new ApiError(
       503,
-      "Payments are not configured yet. Set STRIPE_SECRET_KEY in server/.env to enable checkout."
+      "Payments are not configured yet."
     );
   }
 }

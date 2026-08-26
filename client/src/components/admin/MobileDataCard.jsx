@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 // with a `hidden md:block` table and a `md:hidden` list of these.
 export default function MobileDataCard({ title, titleTo, fields = [], status, actions }) {
   return (
-    <div className="flex flex-col gap-3 border border-line p-4">
+    <div className="flex flex-col gap-3 border border-line p-4 w-4/5 mx-auto rounded-md">
       <div className="flex items-start justify-between gap-3">
         {titleTo ? (
           <Link to={titleTo} className="link-underline font-medium">

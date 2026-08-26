@@ -18,6 +18,13 @@ export const createOrderSchema = z.object({
   shippingMethod: z.enum(["standard", "express"]).default("standard"),
 });
 
+export const createCodOrderSchema = z.object({
+  shippingAddress: addressSnapshotSchema,
+  billingAddress: addressSnapshotSchema,
+  shippingMethod: z.enum(["standard", "express"]).default("standard"),
+  couponCode: z.string().trim().optional(),
+});
+
 export const updateOrderStatusSchema = z.object({
   orderStatus: z.enum([
     "pending",

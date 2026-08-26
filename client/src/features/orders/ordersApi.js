@@ -6,6 +6,10 @@ export const ordersApi = apiSlice.injectEndpoints({
       query: (body) => ({ url: "/orders", method: "POST", body }),
       invalidatesTags: ["Order", "Cart"],
     }),
+    createCodOrder: builder.mutation({
+      query: (body) => ({ url: "/orders/cod", method: "POST", body }),
+      invalidatesTags: ["Order", "Cart"],
+    }),
     listMyOrders: builder.query({
       query: () => "/orders",
       providesTags: (result) =>
@@ -26,6 +30,7 @@ export const ordersApi = apiSlice.injectEndpoints({
 
 export const {
   useCreateOrderMutation,
+  useCreateCodOrderMutation,
   useListMyOrdersQuery,
   useGetOrderByIdQuery,
   useUpdateOrderStatusMutation,

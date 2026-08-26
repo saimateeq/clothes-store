@@ -7,7 +7,7 @@ import { Check, Tag } from "lucide-react";
 import { selectCurrentUser } from "../features/auth/authSlice";
 import { useListAddressesQuery } from "../features/auth/authApi";
 import { useCreatePaymentIntentMutation } from "../features/payments/paymentsApi";
-import { useCreateOrderMutation } from "../features/orders/ordersApi";
+import { useCreateOrderMutation, useCreateCodOrderMutation } from "../features/orders/ordersApi";
 import { useValidateCouponMutation } from "../features/coupons/couponsApi";
 import { useCart } from "../context/CartContext";
 import { stripePromise, isStripeEnabled } from "../lib/stripe";
@@ -190,12 +190,15 @@ export default function Checkout() {
   const [intentError, setIntentError] = useState(null);
   const [coupon, setCoupon] = useState(null);
   const [couponError, setCouponError] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState(isStripeEnabled ? "card" : "cod");
+  const [codError, setCodError] = useState(null);
 
   const { data: addressesData } = useListAddressesQuery();
   const savedAddresses = addressesData?.data?.addresses ?? [];
 
   const [createPaymentIntent, { isLoading: isCreatingIntent }] = useCreatePaymentIntentMutation();
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
+  const [createCodOrder, { isLoading: isCreatingCodOrder }] = useCreateCodOrderMutation();
   const [validateCoupon, { isLoading: isApplyingCoupon }] = useValidateCouponMutation();
 
   // Re-request the PaymentIntent whenever the shipping method or applied
@@ -206,13 +209,13 @@ export default function Checkout() {
   }, [shippingMethod, coupon?.code]);
 
   useEffect(() => {
-    if (step === 3 && isStripeEnabled && !clientSecret && items.length > 0) {
+    if (step === 3 && paymentMethod === "card" && isStripeEnabled && !clientSecret && items.length > 0) {
       createPaymentIntent({ shippingMethod, couponCode: coupon?.code })
         .unwrap()
         .then((res) => setClientSecret(res.data.clientSecret))
         .catch((err) => setIntentError(err.data?.message || "Could not start payment"));
     }
-  }, [step, clientSecret, shippingMethod, coupon?.code, items.length, createPaymentIntent]);
+  }, [step, paymentMethod, clientSecret, shippingMethod, coupon?.code, items.length, createPaymentIntent]);
 
   const handleApplyCoupon = async (code) => {
     setCouponError(null);
@@ -249,6 +252,22 @@ export default function Checkout() {
       .unwrap()
       .catch((err) => {
         setIntentError(err.data?.message || "Could not finalize your order");
+        return null;
+      });
+    if (res) navigate(`/order-success?order=${res.data.order._id}`, { replace: true });
+  };
+
+  const handlePlaceCodOrder = async () => {
+    setCodError(null);
+    const res = await createCodOrder({
+      shippingAddress,
+      billingAddress: billingSameAsShipping ? shippingAddress : billingAddress,
+      shippingMethod,
+      couponCode: coupon?.code,
+    })
+      .unwrap()
+      .catch((err) => {
+        setCodError(err.data?.message || "Could not place your order");
         return null;
       });
     if (res) navigate(`/order-success?order=${res.data.order._id}`, { replace: true });
@@ -398,10 +417,56 @@ export default function Checkout() {
           {step === 3 && (
             <div className="flex flex-col gap-6">
               <h2 className="font-heading text-2xl">Payment</h2>
-              {!isStripeEnabled ? (
+
+              <div className="flex flex-col gap-3">
+                {isStripeEnabled && (
+                  <label
+                    className={`flex cursor-pointer items-center gap-3 border p-4 transition-colors ${
+                      paymentMethod === "card" ? "border-ink" : "border-line"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      checked={paymentMethod === "card"}
+                      onChange={() => setPaymentMethod("card")}
+                      className="accent-ink"
+                    />
+                    <span className="text-sm font-medium">Card</span>
+                  </label>
+                )}
+                <label
+                  className={`flex cursor-pointer items-center gap-3 border p-4 transition-colors ${
+                    paymentMethod === "cod" ? "border-ink" : "border-line"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                    className="accent-ink"
+                  />
+                  <span className="text-sm font-medium">Cash on Delivery</span>
+                </label>
+              </div>
+
+              {paymentMethod === "cod" ? (
+                <div className="flex flex-col gap-4">
+                  <p className="text-sm text-muted">Pay with cash when your order arrives.</p>
+                  {codError && <p className="text-xs text-accent">{codError}</p>}
+                  <button
+                    type="button"
+                    onClick={handlePlaceCodOrder}
+                    disabled={isCreatingCodOrder}
+                    className="label w-full bg-ink py-4 text-bg transition-opacity hover:opacity-85 disabled:opacity-50"
+                  >
+                    {isCreatingCodOrder ? "Placing Order…" : "Place Order"}
+                  </button>
+                </div>
+              ) : !isStripeEnabled ? (
                 <p className="border border-line p-4 text-sm text-muted">
-                  Payments are not configured yet. Set <code>STRIPE_SECRET_KEY</code> on the server and{" "}
-                  <code>VITE_STRIPE_PUBLISHABLE_KEY</code> on the client to enable checkout.
+                  Payments are not configured yet
                 </p>
               ) : intentError ? (
                 <p className="text-sm text-accent">{intentError}</p>

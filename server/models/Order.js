@@ -57,6 +57,7 @@ const orderSchema = new mongoose.Schema(
     billingAddress: { type: addressSnapshotSchema, required: true },
     shippingMethod: { type: String, enum: ["standard", "express"], default: "standard" },
 
+    paymentMethod: { type: String, enum: ["card", "cod"], default: "card" },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed", "refunded"],
