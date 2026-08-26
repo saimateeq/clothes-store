@@ -7,8 +7,9 @@ export default function MobileMenu({ open, onClose, links, onSearchClick, isAuth
   useEscapeKey(onClose, open);
   const extraLinks = [
     { label: "Wishlist", to: "/wishlist", icon: Heart },
-    { label: "Account", to: isAuthenticated ? "/account" : "/login", icon: User },
-    ...(isAdmin ? [{ label: "Admin", to: "/admin", icon: LayoutDashboard }] : []),
+    ...(isAdmin
+      ? [{ label: "Admin", to: "/admin", icon: LayoutDashboard }]
+      : [{ label: "Account", to: isAuthenticated ? "/account" : "/login", icon: User }]),
   ];
   return (
     <AnimatePresence>

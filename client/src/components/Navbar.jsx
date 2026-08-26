@@ -135,13 +135,15 @@ export default function Navbar() {
                 <LayoutDashboard size={19} strokeWidth={1.5} />
               </Link>
             )}
-            <Link
-              to={isAuthenticated ? "/account" : "/login"}
-              className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
-              aria-label="Account"
-            >
-              <User size={19} strokeWidth={1.5} />
-            </Link>
+            {!isAdmin && (
+              <Link
+                to={isAuthenticated ? "/account" : "/login"}
+                className="hidden transition-opacity hover:opacity-60 sm:inline-flex"
+                aria-label="Account"
+              >
+                <User size={19} strokeWidth={1.5} />
+              </Link>
+            )}
             <button
               type="button"
               onClick={openCart}
