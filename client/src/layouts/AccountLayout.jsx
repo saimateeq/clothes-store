@@ -34,15 +34,15 @@ export default function AccountLayout() {
       </div>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[220px_1fr]">
-        <aside className="flex flex-row gap-1 overflow-x-auto lg:flex-col lg:gap-0">
+        <aside className="no-scrollbar flex flex-row gap-2 overflow-x-auto pb-1 lg:flex-col lg:pb-0">
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}
               to={tab.to}
               end={tab.end}
               className={({ isActive }) =>
-                `whitespace-nowrap border-b border-line py-3 text-sm transition-colors lg:border-b-0 lg:border-l lg:pl-4 ${
-                  isActive ? "border-ink font-medium text-ink" : "border-line text-muted hover:text-ink"
+                `label shrink-0 whitespace-nowrap border px-4 py-2.5 transition-colors ${
+                  isActive ? "border-ink bg-ink text-bg" : "border-line text-muted hover:border-ink hover:text-ink"
                 }`
               }
             >
@@ -52,7 +52,7 @@ export default function AccountLayout() {
           <button
             type="button"
             onClick={handleLogout}
-            className="mt-0 flex items-center gap-2 whitespace-nowrap py-3 text-sm text-muted hover:text-ink lg:mt-6 lg:border-l lg:border-transparent lg:pl-4"
+            className="label flex shrink-0 items-center gap-2 whitespace-nowrap border border-line px-4 py-2.5 text-muted transition-colors hover:border-accent hover:text-accent lg:mt-4"
           >
             <LogOut size={14} strokeWidth={1.5} />
             Log Out
