@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { flushSync } from "react-dom";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
@@ -67,8 +68,15 @@ export default function AdminLayout() {
 
   const handleLogout = async () => {
     await logout().catch(() => null);
+    // flushSync forces the navigation to fully commit — unmounting this
+    // AdminRoute-guarded page — before auth state changes below. Without
+    // it, React batches both into one update, so AdminRoute sees
+    // isAuthenticated flip to false while still mounted here and fires
+    // its own redirect to /login, winning the race against this.
+    flushSync(() => {
+      navigate("/");
+    });
     dispatch(clearCredentials());
-    navigate("/");
   };
 
   return (

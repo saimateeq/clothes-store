@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,8 +35,16 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await logout().catch(() => null);
+    // flushSync forces the navigation to fully commit — including
+    // unmounting whatever protected route we were on — before auth state
+    // changes. Without it, React batches the navigate + dispatch below
+    // into one update, so ProtectedRoute (still mounted for e.g. /account)
+    // sees isAuthenticated flip to false and fires its own redirect to
+    // /login, winning the race against this navigate to "/".
+    flushSync(() => {
+      navigate("/");
+    });
     dispatch(clearCredentials());
-    navigate("/");
   };
 
   useEffect(() => {

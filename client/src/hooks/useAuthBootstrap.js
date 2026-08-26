@@ -11,10 +11,16 @@ export function useAuthBootstrap() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (data?.data?.user) {
-      dispatch(setCredentials(data.data.user));
-    } else if (error) {
+    // Check error first — RTK Query keeps the previous successful `data`
+    // around during a refetch (e.g. the automatic re-fetch triggered by
+    // logout's invalidatesTags), so a failed refetch can report BOTH a
+    // fresh 401 error AND still-truthy stale `data` at the same time.
+    // Checking `data` first would re-authenticate the user with that
+    // stale cache right after they logged out.
+    if (error) {
       dispatch(clearCredentials());
+    } else if (data?.data?.user) {
+      dispatch(setCredentials(data.data.user));
     }
   }, [data, error, isLoading, dispatch]);
 }
