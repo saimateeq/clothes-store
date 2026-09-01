@@ -10,10 +10,12 @@ import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
 import Loader from "./components/Loader";
 import PageTransition from "./components/PageTransition";
+import ShoppingAssistant from "./components/ai/ShoppingAssistant";
 import AccountLayout from "./layouts/AccountLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Shop from "./pages/Shop";
+import Stylist from "./pages/Stylist";
 import ProductDetails from "./pages/ProductDetails";
 import Wishlist from "./pages/Wishlist";
 import Cart from "./pages/Cart";
@@ -76,6 +78,7 @@ function StorefrontRoutes() {
           <Route path="/about" element={<About />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:category" element={<Shop />} />
+          <Route path="/stylist" element={<Stylist />} />
           <Route path="/product/:slug" element={<ProductDetails />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
@@ -114,6 +117,7 @@ function Storefront() {
       </main>
       <Footer />
       <CartDrawer />
+      <ShoppingAssistant />
     </div>
   );
 }

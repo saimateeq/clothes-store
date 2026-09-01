@@ -16,6 +16,7 @@ const NAV_LINKS = [
   { label: "Men", to: "/shop/men" },
   { label: "New Arrivals", to: "/shop?sort=newest" },
   { label: "Collections", to: "/shop" },
+  { label: "AI Stylist", to: "/stylist" },
   { label: "Our Story", to: "/about" },
 ];
 

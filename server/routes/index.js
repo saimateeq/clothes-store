@@ -13,6 +13,7 @@ import couponRoutes from "./couponRoutes.js";
 import newsletterRoutes from "./newsletterRoutes.js";
 import adminRoutes from "./adminRoutes.js";
 import uploadRoutes from "./uploadRoutes.js";
+import aiRoutes from "./aiRoutes.js";
 
 const router = Router();
 
@@ -34,5 +35,6 @@ router.use("/coupons", couponRoutes);
 router.use("/newsletter", newsletterRoutes);
 router.use("/admin", adminRoutes);
 router.use("/uploads", uploadRoutes);
+router.use("/ai", aiRoutes);
 
 export default router;
