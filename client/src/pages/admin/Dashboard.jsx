@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { useGetDashboardQuery } from "../../features/admin/adminApi";
+import AiInsightsSection from "../../components/admin/AiInsightsSection";
 
 const RANGES = [
   { value: "7d", label: "7 Days" },
@@ -78,6 +79,8 @@ export default function Dashboard() {
             <StatCard label="New Customers" value={d.overview.newCustomers} />
             <StatCard label="Products Sold" value={d.overview.productsSold} />
           </div>
+
+          <AiInsightsSection range={range} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="border border-line p-5 lg:col-span-2">

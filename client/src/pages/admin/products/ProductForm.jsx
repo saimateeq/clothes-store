@@ -9,6 +9,7 @@ import {
   useUpdateProductMutation,
 } from "../../../features/products/productsApi";
 import ImageUploader from "../../../components/admin/ImageUploader";
+import AiDescriptionPanel from "../../../components/admin/AiDescriptionPanel";
 import TextField from "../../../components/form/TextField";
 
 function flattenCategories(tree, depth = 0) {
@@ -56,6 +57,8 @@ export default function ProductForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -75,6 +78,8 @@ export default function ProductForm() {
       costPrice: product.costPrice,
       material: product.material,
       careInstructions: product.careInstructions,
+      seoTitle: product.seoTitle,
+      seoMetaDescription: product.seoMetaDescription,
       lowStockThreshold: product.lowStockThreshold,
       isFeatured: product.isFeatured,
       isNewArrival: product.isNewArrival,
@@ -132,6 +137,33 @@ export default function ProductForm() {
     if (res) navigate("/admin/products");
   };
 
+  // Feeds the AI generator whatever's already filled in above — never
+  // sent anywhere until the admin explicitly clicks Generate.
+  const getAiInputs = () => {
+    const values = getValues();
+    const categoryName = flatCategories.find((c) => c._id === values.category)?.name;
+    return {
+      name: values.name,
+      category: categoryName,
+      material: values.material,
+      color: colors.find((c) => c.name)?.name,
+      price: values.price ? Number(values.price) : undefined,
+    };
+  };
+
+  // Applies one generated field at a time, only on an explicit "Apply"
+  // click from the admin — this never runs on its own, and never touches
+  // anything beyond the single field clicked.
+  const applyAiField = (fields) => {
+    Object.entries(fields).forEach(([key, value]) => {
+      if (key === "tags") {
+        setTags(value);
+      } else {
+        setValue(key, value, { shouldDirty: true });
+      }
+    });
+  };
+
   if (isEdit && isLoadingProduct) return <div className="h-96 animate-pulse bg-line" />;
 
   return (
@@ -187,6 +219,8 @@ export default function ProductForm() {
             {errors.description && <span className="text-xs text-accent">{errors.description.message}</span>}
           </label>
         </section>
+
+        <AiDescriptionPanel getInputs={getAiInputs} onApply={applyAiField} />
 
         <section className="flex flex-col gap-4 border border-line p-6">
           <h2 className="label text-muted">Pricing</h2>
@@ -303,6 +337,15 @@ export default function ProductForm() {
           <label className="flex flex-col gap-2">
             <span className="label text-muted">Tags</span>
             <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="linen, summer, new" className="border border-line bg-transparent px-4 py-3 text-sm outline-none focus:border-ink" />
+          </label>
+        </section>
+
+        <section className="flex flex-col gap-4 border border-line p-6">
+          <h2 className="label text-muted">SEO</h2>
+          <TextField label="SEO Title" registration={register("seoTitle")} />
+          <label className="flex flex-col gap-2">
+            <span className="label text-muted">SEO Meta Description</span>
+            <textarea {...register("seoMetaDescription")} rows={2} className="border border-line bg-transparent px-4 py-3 text-sm outline-none focus:border-ink" />
           </label>
         </section>
 

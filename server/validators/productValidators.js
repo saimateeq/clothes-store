@@ -37,6 +37,8 @@ export const productSchema = z.object({
   tags: z.array(z.string()).default([]),
   material: z.string().trim().optional(),
   careInstructions: z.string().trim().optional(),
+  seoTitle: z.string().trim().max(70).optional(),
+  seoMetaDescription: z.string().trim().max(200).optional(),
   isFeatured: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
   isBestSeller: z.boolean().optional(),

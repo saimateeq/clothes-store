@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { X, Search, Clock } from "lucide-react";
+import { X, Search, Clock, Camera } from "lucide-react";
 import { useSearchProductsQuery } from "../features/products/productsApi";
 import { normalizeProducts } from "../features/products/productAdapter";
 import { useDebounce } from "../hooks/useDebounce";
@@ -72,6 +72,13 @@ export default function SearchOverlay({ open, onClose }) {
                   className="w-full bg-transparent font-heading text-xl outline-none placeholder:text-muted sm:text-2xl"
                 />
               </div>
+              <Link
+                to="/visual-search"
+                onClick={onClose}
+                className="link-underline mt-4 inline-flex items-center gap-2 label text-muted"
+              >
+                <Camera size={13} strokeWidth={1.5} /> Search with a photo instead
+              </Link>
             </motion.div>
 
             <div className="mt-10">

@@ -2,6 +2,7 @@ import HeroSection from "../components/home/hero/HeroSection";
 import CategorySection from "../components/CategorySection";
 import NewArrivals from "../components/NewArrivals";
 import BestSellers from "../components/BestSellers";
+import RecommendedForYou from "../components/RecommendedForYou";
 import CollectionBanner from "../components/CollectionBanner";
 import Newsletter from "../components/Newsletter";
 import Benefits from "../components/Benefits";
@@ -18,6 +19,7 @@ export default function Home() {
       <CategorySection />
       <NewArrivals />
       <BestSellers />
+      <RecommendedForYou />
       <Newsletter />
       <Benefits />
     </>

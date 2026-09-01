@@ -16,6 +16,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Shop from "./pages/Shop";
 import Stylist from "./pages/Stylist";
+import VisualSearch from "./pages/VisualSearch";
 import ProductDetails from "./pages/ProductDetails";
 import Wishlist from "./pages/Wishlist";
 import Cart from "./pages/Cart";
@@ -49,6 +50,7 @@ const AdminCustomerDetail = lazy(() => import("./pages/admin/CustomerDetail"));
 const AdminReviews = lazy(() => import("./pages/admin/Reviews"));
 const AdminCoupons = lazy(() => import("./pages/admin/Coupons"));
 const AdminNewsletter = lazy(() => import("./pages/admin/Newsletter"));
+const AdminMarketing = lazy(() => import("./pages/admin/Marketing"));
 
 function SuspenseFallback() {
   return <div className="mx-auto max-w-[1600px] px-5 py-24"><div className="h-64 animate-pulse bg-line" /></div>;
@@ -79,6 +81,7 @@ function StorefrontRoutes() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/:category" element={<Shop />} />
           <Route path="/stylist" element={<Stylist />} />
+          <Route path="/visual-search" element={<VisualSearch />} />
           <Route path="/product/:slug" element={<ProductDetails />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
@@ -141,6 +144,7 @@ function AdminApp() {
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="coupons" element={<AdminCoupons />} />
             <Route path="newsletter" element={<AdminNewsletter />} />
+            <Route path="marketing" element={<AdminMarketing />} />
           </Route>
         </Route>
       </Routes>

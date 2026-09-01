@@ -55,6 +55,8 @@ const productSchema = new mongoose.Schema(
     tags: [{ type: String, trim: true, lowercase: true, index: true }],
     material: { type: String, trim: true },
     careInstructions: { type: String, trim: true },
+    seoTitle: { type: String, trim: true, maxlength: 70 },
+    seoMetaDescription: { type: String, trim: true, maxlength: 200 },
 
     rating: { type: Number, default: 0, min: 0, max: 5 },
     reviewCount: { type: Number, default: 0, min: 0 },

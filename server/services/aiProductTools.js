@@ -8,7 +8,7 @@ import { buildProductQuery } from "./productQueryService.js";
 // only ever sees products that genuinely exist, are active, and match a
 // real Mongo filter — never a hand-rolled parallel search implementation.
 
-const MAX_RESULTS = 12;
+const MAX_RESULTS = 24;
 const OBJECT_ID_RE = /^[0-9a-fA-F]{24}$/;
 const NO_MATCH_ID = "000000000000000000000000";
 

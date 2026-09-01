@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { selectCurrentUser, clearCredentials } from "../features/auth/authSlice";
 import { useLogoutMutation } from "../features/auth/authApi";
@@ -32,6 +33,7 @@ const NAV = [
   { label: "Reviews", to: "/admin/reviews", icon: Star },
   { label: "Coupons", to: "/admin/coupons", icon: Tag },
   { label: "Newsletter", to: "/admin/newsletter", icon: Mail },
+  { label: "AI Marketing", to: "/admin/marketing", icon: Sparkles },
 ];
 
 function SidebarLinks({ onNavigate }) {

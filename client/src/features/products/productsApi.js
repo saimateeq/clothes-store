@@ -18,6 +18,9 @@ export const productsApi = apiSlice.injectEndpoints({
     getProductFacets: builder.query({
       query: () => "/products/facets",
     }),
+    getRecommendedProducts: builder.query({
+      query: (params) => ({ url: "/products/recommended", params }),
+    }),
     getProductBySlug: builder.query({
       query: (slug) => `/products/${slug}`,
       providesTags: (result, error, slug) => [{ type: "Product", id: slug }],
@@ -53,6 +56,7 @@ export const {
   useListProductsQuery,
   useSearchProductsQuery,
   useGetProductFacetsQuery,
+  useGetRecommendedProductsQuery,
   useGetProductBySlugQuery,
   useGetProductByIdQuery,
   useListProductsAdminQuery,

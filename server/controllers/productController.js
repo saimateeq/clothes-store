@@ -3,7 +3,11 @@ import { ApiError } from "../utils/ApiError.js";
 import { ok, created } from "../utils/apiResponse.js";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
+import User from "../models/User.js";
 import { buildProductQuery } from "../services/productQueryService.js";
+import { getRecommendedProducts as scoreRecommendedProducts } from "../services/recommendationService.js";
+
+const RECENTLY_VIEWED_CAP = 20;
 
 const NO_MATCH_ID = "000000000000000000000000";
 
@@ -87,7 +91,43 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
     .limit(4)
     .select("name slug price compareAtPrice images colors sizes rating reviewCount isNewArrival isBestSeller");
 
+  // Fire-and-forget: a logged-in view feeds "Recommended For You" (see
+  // recommendationService.js). Pull-then-push moves an already-viewed
+  // product back to the front instead of duplicating it, capped so the
+  // list can't grow unbounded for a heavy browser.
+  if (req.user) {
+    User.findByIdAndUpdate(req.user._id, {
+      $pull: { recentlyViewed: product._id },
+    })
+      .then(() =>
+        User.findByIdAndUpdate(req.user._id, {
+          $push: { recentlyViewed: { $each: [product._id], $position: 0, $slice: RECENTLY_VIEWED_CAP } },
+        })
+      )
+      .catch((err) => console.error("Failed to record recently-viewed product:", err.message));
+  }
+
   ok(res, { product, related });
+});
+
+// GET /api/products/recommended — "Recommended For You". Logged-in users
+// are scored from recentlyViewed + order history (see productController's
+// recently-viewed tracking above); guests pass their locally-tracked
+// viewed product ids via ?viewed=id1,id2. Deliberately a scoring query,
+// not a per-request AI call — see recommendationService.js for why.
+export const getRecommendedProducts = asyncHandler(async (req, res) => {
+  const viewedIds = req.query.viewed ? String(req.query.viewed).split(",").filter(Boolean) : [];
+  const excludeIds = req.query.exclude ? String(req.query.exclude).split(",").filter(Boolean) : [];
+  const limit = Math.min(20, Math.max(1, Number(req.query.limit) || 12));
+
+  const products = await scoreRecommendedProducts({
+    userId: req.user?._id,
+    viewedIds,
+    excludeIds,
+    limit,
+  });
+
+  ok(res, { products });
 });
 
 // GET /api/products/facets — distinct sizes/colors across the active

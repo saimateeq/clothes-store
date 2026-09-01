@@ -1,15 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Heart, Minus, Plus, PlayCircle, ChevronDown } from "lucide-react";
+import { Star, Heart, Minus, Plus, PlayCircle, ChevronDown, Sparkles } from "lucide-react";
 import { useGetProductBySlugQuery } from "../features/products/productsApi";
 import { normalizeProduct, normalizeProducts } from "../features/products/productAdapter";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import ProductGrid from "../components/ProductGrid";
 import SectionHeading from "../components/SectionHeading";
 import { ProductGridSkeleton } from "../components/ProductCardSkeleton";
 import ProductReviews from "../components/ProductReviews";
+import OutfitSection from "../components/ai/OutfitSection";
+import SizeRecommendationModal from "../components/ai/SizeRecommendationModal";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 const ACCORDIONS = [
@@ -77,6 +80,7 @@ export default function ProductDetails() {
   const { data, isLoading, isError } = useGetProductBySlugQuery(slug);
   const { addItem } = useCart();
   const { toggle, has } = useWishlist();
+  const { recordView } = useRecentlyViewed();
 
   const product = useMemo(() => normalizeProduct(data?.data?.product), [data]);
   const related = useMemo(() => normalizeProducts(data?.data?.related), [data]);
@@ -87,8 +91,14 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [openAccordion, setOpenAccordion] = useState(0);
   const [sizeError, setSizeError] = useState(false);
+  const [sizeModalOpen, setSizeModalOpen] = useState(false);
 
   useDocumentTitle(product?.name);
+
+  useEffect(() => {
+    if (product?._id) recordView(product._id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?._id]);
 
   if (isError) return <Navigate to="/shop" replace />;
 
@@ -226,9 +236,18 @@ export default function ProductDetails() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <h3 className="label text-muted">Size {size && `— ${size}`}</h3>
-              <button type="button" className="link-underline text-xs text-muted">
-                Size Guide
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSizeModalOpen(true)}
+                  className="link-underline flex items-center gap-1 text-xs text-accent"
+                >
+                  <Sparkles size={11} strokeWidth={1.5} /> Find My Size
+                </button>
+                <button type="button" className="link-underline text-xs text-muted">
+                  Size Guide
+                </button>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               {product.sizes.map((s) => (
@@ -345,14 +364,18 @@ export default function ProductDetails() {
         </div>
       </div>
 
+      <OutfitSection productId={product._id} />
+
       {related.length > 0 && (
         <section className="mt-24 lg:mt-32">
-          <SectionHeading label="You May Also Like" heading="Complete The Look" />
+          <SectionHeading label="More To Explore" heading="You May Also Like" />
           <div className="mt-12">
             <ProductGrid products={related} columns="grid-cols-2 lg:grid-cols-4" />
           </div>
         </section>
       )}
+
+      <SizeRecommendationModal open={sizeModalOpen} onClose={() => setSizeModalOpen(false)} productId={product._id} />
     </div>
   );
 }

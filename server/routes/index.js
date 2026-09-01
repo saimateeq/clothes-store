@@ -14,6 +14,7 @@ import newsletterRoutes from "./newsletterRoutes.js";
 import adminRoutes from "./adminRoutes.js";
 import uploadRoutes from "./uploadRoutes.js";
 import aiRoutes from "./aiRoutes.js";
+import adminAiRoutes from "./adminAiRoutes.js";
 
 const router = Router();
 
@@ -33,6 +34,7 @@ router.use("/orders", orderRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/coupons", couponRoutes);
 router.use("/newsletter", newsletterRoutes);
+router.use("/admin/ai", adminAiRoutes);
 router.use("/admin", adminRoutes);
 router.use("/uploads", uploadRoutes);
 router.use("/ai", aiRoutes);
