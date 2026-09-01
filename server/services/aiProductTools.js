@@ -19,6 +19,24 @@ async function resolveCategory(category) {
   return cat ? cat._id.toString() : NO_MATCH_ID;
 }
 
+// Product.colors.name isn't normalized to one casing in the catalog (e.g.
+// "black" vs "Black"), and the AI or a free-text form field can send either
+// — an exact-match filter would silently drop valid matches. Resolve
+// case-insensitively against the real distinct color names instead; a
+// color that matches nothing is dropped rather than zeroing the whole
+// result set, same soft-fail behavior as an unresolved category above.
+async function resolveColors(colors) {
+  if (!colors) return undefined;
+  const requested = (Array.isArray(colors) ? colors : String(colors).split(","))
+    .map((c) => String(c).trim().toLowerCase())
+    .filter(Boolean);
+  if (!requested.length) return undefined;
+
+  const distinct = await Product.distinct("colors.name");
+  const matched = distinct.filter((name) => requested.includes(name.toLowerCase()));
+  return matched.length ? matched : undefined;
+}
+
 // A short "women, men, shirts, ..." hint fed into the AI's system prompt so
 // it uses real category slugs instead of guessing.
 export async function getCategoryHint() {
@@ -58,14 +76,14 @@ export async function searchProductDocs({
   inStock,
   limit = MAX_RESULTS,
 } = {}) {
-  const resolvedCategory = await resolveCategory(category);
+  const [resolvedCategory, resolvedColors] = await Promise.all([resolveCategory(category), resolveColors(colors)]);
   const { filter, sort } = buildProductQuery(
     {
       q,
       category: resolvedCategory,
       minPrice,
       maxPrice,
-      colors: Array.isArray(colors) ? colors.join(",") : colors,
+      colors: resolvedColors ? resolvedColors.join(",") : undefined,
       sizes: Array.isArray(sizes) ? sizes.join(",") : sizes,
       inStock: inStock ? "true" : undefined,
     },

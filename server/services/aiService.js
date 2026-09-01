@@ -9,7 +9,7 @@ import {
   toAiPrompt,
 } from "./aiProductTools.js";
 
-const REQUEST_TIMEOUT_MS = 20_000;
+const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_CHAT_ITERATIONS = 5;
 const MAX_HISTORY_MESSAGES = 8;
 
