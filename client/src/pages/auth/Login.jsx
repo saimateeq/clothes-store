@@ -2,11 +2,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { Sparkles } from "lucide-react";
 import { loginSchema } from "../../features/auth/authSchemas";
 import { useLoginMutation } from "../../features/auth/authApi";
 import { setCredentials } from "../../features/auth/authSlice";
 import TextField from "../../components/form/TextField";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import { DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD } from "../../constants/config";
 
 export default function Login() {
   useDocumentTitle("Log In");
@@ -19,8 +21,14 @@ export default function Login() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: zodResolver(loginSchema) });
+
+  const fillDemoCredentials = () => {
+    setValue("email", DEMO_ADMIN_EMAIL, { shouldValidate: true });
+    setValue("password", DEMO_ADMIN_PASSWORD, { shouldValidate: true });
+  };
 
   const onSubmit = async (values) => {
     const res = await login(values).unwrap().catch(() => null);
@@ -40,7 +48,15 @@ export default function Login() {
       <span className="label text-accent">Welcome Back</span>
       <h1 className="mt-2 font-heading text-4xl sm:text-5xl">Log In</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 flex flex-col gap-5" noValidate>
+      <button
+        type="button"
+        onClick={fillDemoCredentials}
+        className="label mt-8 flex items-center justify-center gap-2 border border-line py-3.5 text-accent transition-colors hover:border-accent"
+      >
+        <Sparkles size={13} strokeWidth={1.5} /> Try the Demo Admin Account
+      </button>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5" noValidate>
         <TextField
           label="Email"
           type="email"
